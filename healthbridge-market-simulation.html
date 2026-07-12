@@ -134,8 +134,8 @@
       <div class="eyebrow">HealthBridge Technologies</div>
       <h1 class="title">Compensation Consulting Simulation</h1>
       <p class="subtitle" style="max-width:440px;">You are the external consulting team brought in to answer one question for the CEO. Enter your team name to begin.</p>
-      <input type="text" id="teamNameInput" placeholder="e.g. Team Meridian">
-      <button class="primary" onclick="startSim()">Begin the Engagement</button>
+      <input type="text" id="teamNameInput" placeholder="e.g. Enter Your Team Name">
+      <button class="primary" onclick="startSim()">START SIMULATION</button>
     </div>
   </div>
 
@@ -171,24 +171,24 @@
         <p style="margin:0 0 12px;font-size:14.5px;">Discuss as a team: what additional information do you need before you can answer Priya's question?</p>
         <textarea id="needsList" placeholder="..."></textarea>
       </div>
-      <div class="nav-row"><span></span><button class="primary" onclick="goTo(1)">Proceed to the Ladder →</button></div>
+      <div class="nav-row"><span></span><button class="primary" onclick="goTo(1)">Proceed to Job Evaluation Output →</button></div>
     </div>
 
     <!-- PHASE 1: THE LADDER -->
     <div class="screen" data-idx="1">
-      <div class="eyebrow">Phase 2 · What You Already Built</div>
+      <div class="eyebrow">Phase 2 · Job Evaluation</div>
       <h1 class="title">The Internal Grade Ladder</h1>
       <p class="subtitle">This is HealthBridge's job evaluation output. Six grades, ranked by internal value. This is not yet compared with market data.</p>
       <div class="ladder" id="ladderStatic"></div>
       <div class="card" style="margin-top:22px;">
-        <p style="margin:0;font-size:14px;color:var(--grey);">Make not of this for the next stage of the simulation. You will compare this with market data.</p>
+        <p style="margin:0;font-size:14px;color:var(--grey);">Make note of this for the next stage of the simulation. You will compare this with market data.</p>
       </div>
       <div class="nav-row"><button class="ghost" onclick="goTo(0)">← Back</button><button class="primary" onclick="goTo(2)">Proceed to Define the Market →</button></div>
     </div>
 
     <!-- PHASE 2: MARKET DEFINITION -->
     <div class="screen" data-idx="2">
-      <div class="eyebrow">Phase 3 · Before Any Survey Exists</div>
+      <div class="eyebrow">Phase 3 · Before the Market Survey</div>
       <h1 class="title">Define Your Market — Same Job, Different Boundary</h1>
       <p class="subtitle">One role: Software Engineer. In this scree, define counts as "the market" for HealthBridge.</p>
 
@@ -283,7 +283,7 @@
 
     <!-- PHASE 4: POLICY LINE -->
     <div class="screen" data-idx="4">
-      <div class="eyebrow">Phase 5 · Set a Policy, Not a Patch</div>
+      <div class="eyebrow">Phase 5 · Set the Pay Policy</div>
       <h1 class="title">The Policy Line</h1>
       <p class="subtitle">Move the slider. It moves every role's target pay at once. In actual software, you should be able to adjust target pay for each role one at a time. Check where HealthBridge stands relative to the market.</p>
 
@@ -303,7 +303,7 @@
       <div class="axis" id="policyAxis"></div>
 
       <div class="card" style="margin-top:20px;">
-        <p style="margin:0;font-size:14px;">Take note of what happened: one control repriced every role simultaneously, and the line moved together. Later, in Phase 7, you'll adjust roles one at a time under a fixed budget — hold onto how different that felt.</p>
+        <p style="margin:0;font-size:14px;">Take note of what happened: one control repriced every role simultaneously, and the line moved together.</p>
       </div>
 
       <div class="card">
@@ -316,7 +316,7 @@
 
     <!-- PHASE 5: PAY STRUCTURE -->
     <div class="screen" data-idx="5">
-      <div class="eyebrow">Phase 6 · Build the Fence Around the Line</div>
+      <div class="eyebrow">Phase 6 · Build Salary Range Around the Pay Line</div>
       <h1 class="title">Pay Structure</h1>
       <p class="subtitle">Your policy line just became each grade's midpoint. Now decide how wide each grade's range should be — and watch who falls outside the fence.</p>
 
