@@ -288,7 +288,7 @@
       <p class="subtitle">Move the slider. It moves every role's target pay at once. In actual software, you should be able to adjust target pay for each role one at a time. Check where HealthBridge stands relative to the market.</p>
 
       <div class="card">
-        <label class="field-label">Pay Posture — Lag 85% ←→ Lead 115% of market median</label>
+        <label class="field-label">Pay Strategy — Lag 85% ←→ Lead 115% of market median</label>
         <input type="range" id="postureSlider" min="85" max="115" step="1" value="100" oninput="onPostureChange()">
         <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--grey);margin-top:4px;">
           <span>Lag (85%)</span><span id="postureReadout" style="font-weight:bold;color:var(--navy);font-size:15px;">Match (100%)</span><span>Lead (115%)</span>
@@ -296,18 +296,18 @@
       </div>
 
       <div class="budget-bar" id="policyBudgetBar">
-        <div>ANNUAL COST OF THIS POSTURE</div>
+        <div>ANNUAL COST OF THIS PAY STRATEGY / PAY POSTURE</div>
         <div class="amt" id="policyCostAmt">₹0.0 L</div>
       </div>
 
       <div class="axis" id="policyAxis"></div>
 
       <div class="card" style="margin-top:20px;">
-        <p style="margin:0;font-size:14px;">Notice what just happened: one control repriced every role simultaneously, and the line moved together. Later, in Phase 7, you'll adjust roles one at a time under a fixed budget — hold onto how different that felt.</p>
+        <p style="margin:0;font-size:14px;">Take note of what happened: one control repriced every role simultaneously, and the line moved together. Later, in Phase 7, you'll adjust roles one at a time under a fixed budget — hold onto how different that felt.</p>
       </div>
 
       <div class="card">
-        <label class="field-label">Your team's chosen posture and why — what does this posture assume about HealthBridge's talent strategy and affordability?</label>
+        <label class="field-label">Your team's chosen pay strategy and why — what does this strategy assume about HealthBridge's talent strategy and affordability?</label>
         <textarea id="postureRationale" rows="3"></textarea>
       </div>
 
