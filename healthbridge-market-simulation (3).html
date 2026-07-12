@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthBridge Technologies — Compensation Consulting Simulation</title>
+<style>
+  :root{
+    --navy:#0B1E3D;
+    --navy-2:#152C52;
+    --gold:#B8933E;
+    --gold-soft:#E8DBBB;
+    --paper:#F7F5F0;
+    --ink:#1D1D1B;
+    --grey:#8A8A85;
+    --line:#D8D3C7;
+    --danger:#8C3B2E;
+    --ok:#3F6B4A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:Calibri,"Segoe UI",Georgia,serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif;}
+  .app{max-width:920px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+
+  .rail{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--navy);position:sticky;top:0;z-index:10;}
+  .rail button{flex:1 1 11%;min-width:88px;background:none;border:none;color:rgba(255,255,255,0.45);font-family:Calibri,sans-serif;font-size:10.5px;letter-spacing:0.03em;padding:12px 3px;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+  .rail button.active{color:var(--gold-soft);border-bottom:2px solid var(--gold);}
+
+  .screen{display:none;padding:36px 28px 60px;animation:fade .4s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .eyebrow{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);font-weight:bold;margin-bottom:6px;}
+  h1.title{font-size:27px;margin:0 0 4px;color:var(--navy);}
+  .subtitle{color:var(--grey);font-size:14px;margin-bottom:26px;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:2px;padding:22px;margin-bottom:20px;}
+  .email{font-family:"Courier New",monospace;background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);padding:20px 24px;line-height:1.85;font-size:16.5px;color:#111;}
+  .email .meta{color:var(--grey);font-size:13px;margin-bottom:14px;line-height:1.6;}
+
+  button.primary{background:var(--navy);color:#fff;border:none;padding:12px 26px;font-size:14px;cursor:pointer;border-radius:2px;font-family:Calibri,sans-serif;}
+  button.primary:hover{background:var(--navy-2);}
+  button.ghost{background:none;border:1px solid var(--line);color:var(--ink);padding:10px 20px;cursor:pointer;border-radius:2px;font-family:Calibri,sans-serif;}
+  .nav-row{display:flex;justify-content:space-between;margin-top:26px;}
+
+  input[type=text],textarea,select,input[type=number]{width:100%;border:1px solid var(--line);padding:10px 12px;font-family:Calibri,sans-serif;font-size:14px;border-radius:2px;background:#fff;}
+  textarea{resize:vertical;min-height:70px;}
+  label.field-label{display:block;font-size:12px;color:var(--grey);margin-bottom:6px;letter-spacing:0.02em;}
+
+  .ladder{display:flex;flex-direction:column-reverse;border:1px solid var(--line);}
+  .grade-row{display:flex;align-items:center;border-top:1px solid var(--line);padding:14px 18px;}
+  .grade-row:first-child{border-top:none;}
+  .grade-letter{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:15px;margin-right:16px;flex-shrink:0;}
+  .grade-info{flex:1;}
+  .grade-name{font-weight:bold;font-size:14px;}
+  .grade-band{color:var(--grey);font-size:12.5px;}
+
+  .source-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .source-card{border:1px solid var(--line);padding:14px 16px;background:#fff;}
+  .source-card .name{font-weight:bold;font-size:14px;margin-bottom:2px;}
+  .source-card .team{font-size:11px;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;}
+  .source-card select{margin-top:10px;width:100%;padding:6px;font-size:13px;border:1px solid var(--line);}
+
+  .budget-bar{display:flex;justify-content:space-between;align-items:center;background:var(--navy);color:#fff;padding:14px 20px;margin-bottom:20px;border-radius:2px;position:sticky;top:44px;z-index:9;}
+  .budget-bar .amt{font-family:Georgia,serif;font-size:20px;}
+  .budget-bar.over .amt{color:#E8A79A;}
+
+  .role-row{border:1px solid var(--line);padding:16px 18px;margin-bottom:12px;background:#fff;}
+  .role-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .role-name{font-weight:bold;font-size:14.5px;}
+  .role-meta{font-size:12px;color:var(--grey);}
+  .role-nums{display:flex;gap:22px;font-size:13px;margin-bottom:10px;flex-wrap:wrap;}
+  .role-nums div span{display:block;color:var(--grey);font-size:11px;}
+  .role-nums div b{font-family:Georgia,serif;font-size:15px;}
+  .gap-flag{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--gold-soft);color:#5c4712;}
+  input[type=range]{width:100%;accent-color:var(--gold);}
+
+  .axis{position:relative;width:100%;height:420px;border:1px solid var(--line);background:#fff;}
+  .band{position:absolute;left:0;right:0;border-top:1px dashed var(--line);}
+  .band-label{position:absolute;left:8px;font-size:10.5px;color:var(--grey);top:2px;}
+  .band-rect{position:absolute;left:0;right:0;}
+  .band-rect .rect-label{position:absolute;left:8px;top:2px;font-size:10px;font-weight:bold;}
+  .marker{position:absolute;width:12px;height:12px;border-radius:50%;left:calc(50% - 6px);transform:translateY(-6px);z-index:3;}
+  .marker.current{background:#fff;border:2px solid var(--grey);}
+  .marker.proposed{background:var(--gold);border:2px solid var(--navy);}
+  .marker.policy{background:var(--navy);border:2px solid var(--gold);}
+  .marker.flagged{background:var(--danger);border:2px solid var(--danger);}
+  .link-line{position:absolute;left:calc(50% - 1px);width:2px;background:var(--gold);opacity:0.5;z-index:1;}
+  .policy-line-seg{position:absolute;height:2px;background:var(--navy);z-index:2;}
+  .role-columns{display:flex;position:relative;height:100%;}
+  .role-col{position:relative;flex:1;border-left:1px solid var(--line);}
+  .role-col:first-child{border-left:none;}
+  .col-label{position:absolute;bottom:-26px;left:0;right:0;text-align:center;font-size:10px;color:var(--grey);}
+
+  .inversion-alert{margin-top:18px;padding:14px 18px;background:#FBEFE9;border:1px solid var(--danger);color:var(--danger);font-size:13.5px;display:none;}
+  .inversion-alert.show{display:block;}
+  .ok-alert{margin-top:18px;padding:14px 18px;background:#EEF3EE;border:1px solid var(--ok);color:var(--ok);font-size:13.5px;display:none;}
+  .ok-alert.show{display:block;}
+
+  .ai-output{background:#fff;border:1px solid var(--line);padding:20px;font-size:16.5px;line-height:1.85;font-family:"Courier New",monospace;color:#111;}
+  .checklist label{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:14px;}
+  .checklist input{margin-top:3px;}
+
+  .team-gate{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px;}
+  .team-gate input{max-width:280px;margin:16px 0;text-align:center;}
+
+  .dial-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:8px;}
+  .dial{border:1px solid var(--line);padding:14px 16px;background:#fff;}
+  .big-number{font-family:Georgia,serif;font-size:44px;color:var(--navy);text-align:center;margin:6px 0;}
+  .range-note{text-align:center;color:var(--grey);font-size:13px;}
+
+  .toggle-row{display:flex;gap:10px;margin:10px 0;flex-wrap:wrap;}
+  .toggle-row button{flex:1;min-width:120px;padding:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:13px;border-radius:2px;font-family:Calibri,sans-serif;}
+  .toggle-row button.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+  .grade-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;}
+  .grade-table th,.grade-table td{border:1px solid var(--line);padding:8px 10px;text-align:center;}
+  .grade-table th{background:var(--navy);color:#fff;font-size:11.5px;}
+  .grade-table td.rolename{text-align:left;font-weight:bold;}
+
+  @media (max-width:600px){
+    .source-grid{grid-template-columns:1fr;}
+    .role-nums{gap:14px;}
+    .rail button{font-size:9px;padding:10px 2px;min-width:70px;}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="screen active" id="gate">
+    <div class="team-gate">
+      <div class="eyebrow">HealthBridge Technologies</div>
+      <h1 class="title">Compensation Consulting Simulation</h1>
+      <p class="subtitle" style="max-width:440px;">You are the external consulting team brought in to answer one question for the CEO. Enter your team name to begin.</p>
+      <input type="text" id="teamNameInput" placeholder="e.g. Enter Your Team Name">
+      <button class="primary" onclick="startSim()">START SIMULATION</button>
+    </div>
+  </div>
+
+  <div id="mainWrap" style="display:none;">
+    <div class="rail" id="rail">
+      <button onclick="goTo(0)" id="rail0">01 · Brief</button>
+      <button onclick="goTo(1)" id="rail1">02 · Ladder</button>
+      <button onclick="goTo(2)" id="rail2">03 · Define Market</button>
+      <button onclick="goTo(3)" id="rail3">04 · Survey Hunt</button>
+      <button onclick="goTo(4)" id="rail4">05 · Policy Line</button>
+      <button onclick="goTo(5)" id="rail5">06 · Structure</button>
+      <button onclick="goTo(6)" id="rail6">07 · The Break</button>
+      <button onclick="goTo(7)" id="rail7">08 · AI Challenge</button>
+    </div>
+
+    <!-- PHASE 0: THE BRIEF -->
+    <div class="screen" data-idx="0">
+      <div class="eyebrow">Phase 1 · The CEO Brief</div>
+      <h1 class="title">An email, 6:52 AM</h1>
+      <p class="subtitle">No market data has been provided. Read carefully — you decide what you need next.</p>
+      <div class="email">
+        <div class="meta">From: Priya Menon, CEO — HealthBridge Technologies<br>To: Compensation Consulting Team<br>Subject: I need answers by this afternoon</div>
+        Team,<br><br>
+        Six months. That's how long this has been building, and I'm done guessing.<br><br>
+        Engineering has lost eleven people since January. Three offers were turned down last week alone — one candidate told our recruiter, verbatim, that a competitor "wasn't even trying that hard" to beat what we offered. Time-to-fill on engineering roles has roughly doubled.<br><br>
+        My engineering managers say we're underpaying and it's costing us people we can't afford to lose. Finance says payroll is already stretched and any increase needs to be justified line by line, not by anecdote.<br><br>
+        I don't want opinions. I want evidence. Are we underpaying, or are managers simply complaining?<br><br>
+        — Priya
+      </div>
+      <div class="card" style="margin-top:22px;">
+        <div class="eyebrow" style="color:var(--navy);">Before you move on</div>
+        <p style="margin:0 0 12px;font-size:14.5px;">Discuss as a team: what additional information do you need before you can answer Priya's question?</p>
+        <textarea id="needsList" placeholder="..."></textarea>
+      </div>
+      <div class="nav-row"><span></span><button class="primary" onclick="goTo(1)">Proceed to Job Evaluation Output →</button></div>
+    </div>
+
+    <!-- PHASE 1: THE LADDER -->
+    <div class="screen" data-idx="1">
+      <div class="eyebrow">Phase 2 · Job Evaluation</div>
+      <h1 class="title">The Internal Grade Ladder</h1>
+      <p class="subtitle">This is HealthBridge's job evaluation output. Six grades, ranked by internal value. This is not yet compared with market data.</p>
+      <div class="ladder" id="ladderStatic"></div>
+      <div class="card" style="margin-top:22px;">
+        <p style="margin:0;font-size:14px;color:var(--grey);">Make note of this for the next stage of the simulation. You will compare this with market data.</p>
+      </div>
+      <div class="nav-row"><button class="ghost" onclick="goTo(0)">← Back</button><button class="primary" onclick="goTo(2)">Proceed to Define the Market →</button></div>
+    </div>
+
+    <!-- PHASE 2: MARKET DEFINITION -->
+    <div class="screen" data-idx="2">
+      <div class="eyebrow">Phase 3 · Before the Market Survey</div>
+      <h1 class="title">Define Your Market — Same Job, Different Boundary</h1>
+      <p class="subtitle">One role: Software Engineer. In this scree, define counts as "the market" for HealthBridge.</p>
+
+      <div class="dial-grid">
+        <div class="dial">
+          <label class="field-label">Industry comparator set</label>
+          <select id="dialIndustry" onchange="recomputeMarketDefinition()">
+            <option value="1.00">IT Services companies</option>
+            <option value="1.18" selected>Product &amp; Technology companies</option>
+            <option value="1.30">Analytics &amp; AI-specialist companies</option>
+          </select>
+        </div>
+        <div class="dial">
+          <label class="field-label">Geographic scope</label>
+          <select id="dialGeo" onchange="recomputeMarketDefinition()">
+            <option value="1.00" selected>Bengaluru only</option>
+            <option value="0.92">Tier-1 India (Bengaluru, Chennai, Hyderabad, Kolkata, Mumbai, Pune, Delhi & NCR)</option>
+            <option value="0.85">Pan-India</option>
+          </select>
+        </div>
+        <div class="dial">
+          <label class="field-label">Comparator company size</label>
+          <select id="dialSize" onchange="recomputeMarketDefinition()">
+            <option value="0.95">Under 500 employees</option>
+            <option value="1.00" selected>500 – 2,000 employees</option>
+            <option value="1.07">2,000+ employees</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow" style="color:var(--navy);">Your defined market median — Software Engineer</div>
+        <div class="big-number" id="marketDefResult">₹0.0L</div>
+        <div class="range-note">For the same job, these three choices you made will result in a compensation range that varies from  <b id="marketDefMin">–</b> to <b id="marketDefMax">–</b></div>
+      </div>
+
+      <div class="card" style="margin-top:0;">
+        <p style="margin:0;font-size:14px;">Two teams may agree on the compensation survey methodology, but can still disagree on pay, because of difference in how they define the market.</p>
+      </div>
+
+      <div class="nav-row"><button class="ghost" onclick="goTo(1)">← Back</button><button class="primary" onclick="goTo(3)">Proceed to the Survey Hunt →</button></div>
+    </div>
+
+    <!-- PHASE 3: SURVEY HUNT -->
+    <div class="screen" data-idx="3">
+      <div class="eyebrow">Phase 4 · Market Intelligence Hunt</div>
+      <h1 class="title">Six Teams, Six Sources</h1>
+      <p class="subtitle">Review your assigned Market Survey report, and rate its quality. Also rate the reports assigned to the other groups.</p>
+
+      <div class="source-grid">
+        <div class="source-card"><div class="team">Team A</div><div class="name">Mercer</div>
+          <select><option>Rate this source...</option><option>Highly reliable</option><option>Somewhat reliable</option><option>Not reliable</option></select></div>
+        <div class="source-card"><div class="team">Team B</div><div class="name">Aon</div>
+          <select><option>Rate this source...</option><option>Highly reliable</option><option>Somewhat reliable</option><option>Not reliable</option></select></div>
+        <div class="source-card"><div class="team">Team C</div><div class="name">Radford</div>
+          <select><option>Rate this source...</option><option>Highly reliable</option><option>Somewhat reliable</option><option>Not reliable</option></select></div>
+        <div class="source-card"><div class="team">Team D</div><div class="name">Glassdoor</div>
+          <select><option>Rate this source...</option><option>Highly reliable</option><option>Somewhat reliable</option><option>Not reliable</option></select></div>
+        <div class="source-card"><div class="team">Team E</div><div class="name">AmbitionBox</div>
+          <select><option>Rate this source...</option><option>Highly reliable</option><option>Somewhat reliable</option><option>Not reliable</option></select></div>
+        <div class="source-card"><div class="team">Team F</div><div class="name">LinkedIn Salary</div>
+          <select><option>Rate this source...</option><option>Highly reliable</option><option>Somewhat reliable</option><option>Not reliable</option></select></div>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <div class="eyebrow" style="color:var(--navy);">Toggle lab — the same source isn't one number</div>
+        <p style="font-size:13.5px;margin:0 0 14px;">Pick any source. Toggle how current the data is, and how it was job-matched. Same platform, same role — watch the figure move anyway.</p>
+        <select id="labSource" onchange="recomputeSurveyLab()" style="margin-bottom:12px;">
+          <option value="14.5">Mercer</option>
+          <option value="15.0">Aon</option>
+          <option value="16.0">Radford</option>
+          <option value="13.0">Glassdoor</option>
+          <option value="12.0">AmbitionBox</option>
+          <option value="15.5">LinkedIn Salary</option>
+        </select>
+        <label class="field-label">Data age</label>
+        <div class="toggle-row">
+          <button id="ageBtnCurrent" class="on" onclick="setAge('current')">Current (2 months old)</button>
+          <button id="ageBtnStale" onclick="setAge('stale')">Stale (14 months old)</button>
+        </div>
+        <label class="field-label">Job-matching method</label>
+        <div class="toggle-row">
+          <button id="matchBtnContent" class="on" onclick="setMatch('content')">Matched by job content</button>
+          <button id="matchBtnTitle" onclick="setMatch('title')">Matched by title only</button>
+        </div>
+        <div class="big-number" id="labResult" style="margin-top:14px;">₹14.5L</div>
+        <div class="range-note" id="labNote">Software Engineer, this source, these settings</div>
+      </div>
+
+      <div class="nav-row"><button class="ghost" onclick="goTo(2)">← Back</button><button class="primary" onclick="goTo(4)">Proceed to the Policy Line →</button></div>
+    </div>
+
+    <!-- PHASE 4: POLICY LINE -->
+    <div class="screen" data-idx="4">
+      <div class="eyebrow">Phase 5 · Set the Pay Policy</div>
+      <h1 class="title">The Policy Line</h1>
+      <p class="subtitle">Move the slider. It moves every role's target pay at once. In actual software, you should be able to adjust target pay for each role one at a time. Check where HealthBridge stands relative to the market.</p>
+
+      <div class="card">
+        <label class="field-label">Pay Strategy — Lag 85% ←→ Lead 115% of market median</label>
+        <input type="range" id="postureSlider" min="85" max="115" step="1" value="100" oninput="onPostureChange()">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--grey);margin-top:4px;">
+          <span>Lag (85%)</span><span id="postureReadout" style="font-weight:bold;color:var(--navy);font-size:15px;">Match (100%)</span><span>Lead (115%)</span>
+        </div>
+      </div>
+
+      <div class="budget-bar" id="policyBudgetBar">
+        <div>ANNUAL COST OF THIS PAY STRATEGY / PAY POSTURE</div>
+        <div class="amt" id="policyCostAmt">₹0.0 L</div>
+      </div>
+
+      <div class="axis" id="policyAxis"></div>
+
+      <div class="card" style="margin-top:20px;">
+        <p style="margin:0;font-size:14px;">Take note of what happened: one control repriced every role simultaneously, and the line moved together.</p>
+      </div>
+
+      <div class="card">
+        <label class="field-label">Your team's chosen pay strategy and why — what does this strategy assume about HealthBridge's talent strategy and affordability?</label>
+        <textarea id="postureRationale" rows="3"></textarea>
+      </div>
+
+      <div class="nav-row"><button class="ghost" onclick="goTo(3)">← Back</button><button class="primary" onclick="goTo(5)">Proceed to Pay Structure →</button></div>
+    </div>
+
+    <!-- PHASE 5: PAY STRUCTURE -->
+    <div class="screen" data-idx="5">
+      <div class="eyebrow">Phase 6 · Build Salary Range Around the Pay Line</div>
+      <h1 class="title">Pay Structure</h1>
+      <p class="subtitle">Your policy line just became each grade's midpoint. Now decide how wide each grade's range should be — and watch who falls outside the fence.</p>
+
+      <div class="card">
+        <label class="field-label">Range Spread — how wide is each grade's band? (Max−Min as % of Min)</label>
+        <input type="range" id="spreadSlider" min="15" max="60" step="5" value="30" oninput="onSpreadChange()">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--grey);margin-top:4px;">
+          <span>Narrow (15%)</span><span id="spreadReadout" style="font-weight:bold;color:var(--navy);font-size:15px;">30%</span><span>Wide (60%)</span>
+        </div>
+      </div>
+
+      <table class="grade-table" id="gradeTable"></table>
+
+      <div class="axis" id="structureAxis" style="margin-top:22px;"></div>
+
+      <div class="inversion-alert" id="structureAlert">
+        <b>Compression detected.</b> Two adjacent grade bands overlap so heavily that the ranking barely shows up in pay anymore. A promotion from one grade to the next may carry almost no pay increase.
+      </div>
+      <div class="ok-alert" id="cappedAlert">
+        <b>Someone's capped.</b> At least one employee's current pay now sits above their own grade's new maximum — a real person, over range, with no room left to grow inside this structure.
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <label class="field-label">Your team's structure decision — why this spread? What did you trade off between control and flexibility?</label>
+        <textarea id="structureRationale" rows="3"></textarea>
+      </div>
+
+      <div class="nav-row"><button class="ghost" onclick="goTo(4)">← Back</button><button class="primary" onclick="goTo(6)">Proceed to The Break →</button></div>
+    </div>
+
+    <!-- PHASE 6: THE BREAK -->
+    <div class="screen" data-idx="6">
+      <div class="eyebrow">Phase 7 · Tactical Exceptions</div>
+      <h1 class="title">The Break</h1>
+      <p class="subtitle">Policy and structure are set. Now a real fire: market medians for six roles, a fixed correction budget of <b>₹40,00,000</b> — not enough to close every gap. Every rupee you commit to one role is unavailable to another.</p>
+
+      <div class="budget-bar" id="budgetBar">
+        <div>REMAINING BUDGET</div>
+        <div class="amt" id="budgetAmt">₹40.0 L</div>
+      </div>
+
+      <div id="rolesWrap"></div>
+
+      <div class="card" style="margin-top:6px;">
+        <div class="eyebrow" style="color:var(--navy);">Watch the ladder as you adjust</div>
+        <p style="font-size:14px;margin:0 0 16px;">Grey markers are current pay. Gold markers move as you drag the sliders above. Watch what happens when Software Engineer pay approaches — or passes — the Team Lead's current pay, one grade above it.</p>
+        <div class="axis" id="axis"></div>
+        <div class="inversion-alert" id="inversionAlert">
+          <b>Inversion detected.</b> At least one lower-graded role is now paid at or above a higher-graded role's current pay. Internal equity has broken. Is this defensible to the Team Lead? To Finance? To the CEO?
+        </div>
+      </div>
+
+      <div class="card">
+        <label class="field-label">Your team's recommendation — in one paragraph, justify your allocation. What did you prioritize, what did you defer, and why?</label>
+        <textarea id="recommendation" rows="4"></textarea>
+      </div>
+
+      <div class="nav-row"><button class="ghost" onclick="goTo(5)">← Back</button><button class="primary" onclick="goTo(7)">Proceed to AI Challenge →</button></div>
+    </div>
+
+    <!-- PHASE 7: AI CHALLENGE -->
+    <div class="screen" data-idx="7">
+      <div class="eyebrow">Phase 8 · The AI Challenge</div>
+      <h1 class="title">"Recommend salaries for these five jobs."</h1>
+      <p class="subtitle">This is what an AI assistant returned when given the market survey data. What is your view on this output?</p>
+      <div class="ai-output">
+<b>AI Recommendation — Compensation Adjustment</b><br><br>
+Based on current market median data, I recommend adjusting the following roles to market median to ensure competitiveness and reduce attrition risk:<br><br>
+• Software Engineer: increase from ₹9.5L to ₹14.8L (+55.8%)<br>
+• Engineering Manager: increase from ₹24.0L to ₹26.5L (+10.4%)<br>
+• Data Analyst: increase from ₹8.8L to ₹10.2L (+15.9%)<br>
+• Associate Engineer: increase from ₹6.8L to ₹7.5L (+10.3%)<br>
+• Team Lead: no change recommended (already at market)<br><br>
+These adjustments will bring all roles to at least the market median, which should reduce voluntary attrition and improve offer acceptance rates.
+      </div>
+      <div class="card" style="margin-top:20px;">
+        <div class="eyebrow" style="color:var(--navy);">Critique it as a consulting team</div>
+        <div class="checklist">
+          <label><input type="checkbox"> The AI never asked how "the market" was defined — industry, geography, or company size.</label>
+          <label><input type="checkbox"> The AI ignored the internal grade ladder — a Software Engineer now approaches or exceeds the Team Lead's pay.</label>
+          <label><input type="checkbox"> The AI assumed unlimited budget and no policy stance — it jumped straight to individual fixes.</label>
+          <label><input type="checkbox"> The AI proposed no structure — nothing stops this same gap from reappearing next year.</label>
+        </div>
+        <label class="field-label" style="margin-top:14px;">Would your team present this recommendation directly to the CEO, unedited? Why or why not?</label>
+        <textarea id="aiCritique" rows="3"></textarea>
+      </div>
+      <div class="nav-row"><button class="ghost" onclick="goTo(6)">← Back</button><button class="primary" onclick="submitAll()">Submit Team Deliverable</button></div>
+      <p id="submitMsg" style="color:var(--grey);font-size:13px;margin-top:14px;"></p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let teamName = "";
+let currentIdx = 0;
+const numScreens = 8;
+
+const grades = [
+  {letter:"A", name:"Senior Leadership", band:"₹28L – ₹35L"},
+  {letter:"B", name:"Engineering Manager", band:"₹20L – ₹27L"},
+  {letter:"C", name:"Team Lead", band:"₹14L – ₹19L"},
+  {letter:"D", name:"Software Engineer / Data Analyst", band:"₹9L – ₹13L"},
+  {letter:"E", name:"Associate Engineer", band:"₹6L – ₹8L"},
+  {letter:"F", name:"Trainee", band:"₹4L – ₹5L"}
+];
+
+const roles = [
+  {id:"vp", name:"VP Engineering", grade:"A", current:32.0, headcount:1, market:31.0},
+  {id:"em", name:"Engineering Manager", grade:"B", current:24.0, headcount:3, market:26.5},
+  {id:"tl", name:"Team Lead", grade:"C", current:13.8, headcount:5, market:13.2},
+  {id:"se", name:"Software Engineer", grade:"D", current:9.5, headcount:20, market:14.8},
+  {id:"da", name:"Data Analyst", grade:"D", current:8.8, headcount:8, market:10.2},
+  {id:"ae", name:"Associate Engineer", grade:"E", current:6.8, headcount:15, market:7.5}
+];
+
+const AXIS_MIN = 4, AXIS_MAX = 38;
+const BUDGET = 40.0;
+
+function startSim(){
+  const val = document.getElementById('teamNameInput').value.trim();
+  if(!val){ alert("Please enter a team name to begin."); return; }
+  teamName = val;
+  document.getElementById('gate').classList.remove('active');
+  document.getElementById('mainWrap').style.display = 'block';
+  buildLadderStatic();
+  recomputeMarketDefinition();
+  recomputeSurveyLab();
+  buildRoles();
+  buildAxis();
+  onPostureChange();
+  onSpreadChange();
+  goTo(0);
+}
+
+function goTo(i){
+  currentIdx = i;
+  document.querySelectorAll('.screen[data-idx]').forEach(s=>{
+    s.classList.toggle('active', parseInt(s.dataset.idx) === i);
+  });
+  for(let r=0;r<numScreens;r++){ document.getElementById('rail'+r).classList.toggle('active', r===i); }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function buildLadderStatic(){
+  const wrap = document.getElementById('ladderStatic');
+  wrap.innerHTML = "";
+  grades.forEach(g=>{
+    const row = document.createElement('div');
+    row.className = 'grade-row';
+    row.innerHTML = `<div class="grade-letter">${g.letter}</div>
+      <div class="grade-info"><div class="grade-name">Grade ${g.letter} — ${g.name}</div><div class="grade-band">${g.band}</div></div>`;
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------- PHASE 2: MARKET DEFINITION ---------- */
+const MD_BASE = 12.0;
+function recomputeMarketDefinition(){
+  const ind = parseFloat(document.getElementById('dialIndustry').value);
+  const geo = parseFloat(document.getElementById('dialGeo').value);
+  const size = parseFloat(document.getElementById('dialSize').value);
+  const val = MD_BASE * ind * geo * size;
+  document.getElementById('marketDefResult').textContent = `₹${val.toFixed(1)}L`;
+
+  const indOpts = [1.00,1.18,1.30], geoOpts=[1.00,0.92,0.85], sizeOpts=[0.95,1.00,1.07];
+  let min = Infinity, max = -Infinity;
+  indOpts.forEach(i=>geoOpts.forEach(g=>sizeOpts.forEach(s=>{
+    const v = MD_BASE*i*g*s;
+    if(v<min) min=v; if(v>max) max=v;
+  })));
+  document.getElementById('marketDefMin').textContent = `₹${min.toFixed(1)}L`;
+  document.getElementById('marketDefMax').textContent = `₹${max.toFixed(1)}L`;
+}
+
+/* ---------- PHASE 3: SURVEY TOGGLE LAB ---------- */
+let labAge = 'current', labMatch = 'content';
+function setAge(v){ labAge=v; document.getElementById('ageBtnCurrent').classList.toggle('on', v==='current'); document.getElementById('ageBtnStale').classList.toggle('on', v==='stale'); recomputeSurveyLab(); }
+function setMatch(v){ labMatch=v; document.getElementById('matchBtnContent').classList.toggle('on', v==='content'); document.getElementById('matchBtnTitle').classList.toggle('on', v==='title'); recomputeSurveyLab(); }
+function recomputeSurveyLab(){
+  let base = parseFloat(document.getElementById('labSource').value);
+  if(labAge === 'stale') base = base * 0.91;
+  const result = document.getElementById('labResult');
+  const note = document.getElementById('labNote');
+  if(labMatch === 'title'){
+    const low = (base*0.88).toFixed(1), high = (base*1.12).toFixed(1);
+    result.textContent = `₹${low}L – ₹${high}L`;
+    note.textContent = "Title-only matching trades precision for coverage — this is a range, not a point.";
+  } else {
+    result.textContent = `₹${base.toFixed(1)}L`;
+    note.textContent = "Matched by actual job content — a single defensible figure.";
+  }
+}
+
+/* ---------- PHASE 4: POLICY LINE ---------- */
+let postureValue = 100;
+function onPostureChange(){
+  postureValue = parseFloat(document.getElementById('postureSlider').value);
+  const label = postureValue < 97 ? "Lag" : (postureValue > 103 ? "Lead" : "Match");
+  document.getElementById('postureReadout').textContent = `${label} (${postureValue}%)`;
+  let cost = 0;
+  roles.forEach(r=>{
+    const target = r.market * postureValue/100;
+    const delta = Math.max(target - r.current, 0);
+    cost += delta * r.headcount;
+  });
+  document.getElementById('policyCostAmt').textContent = `₹${cost.toFixed(1)} L`;
+  document.getElementById('policyBudgetBar').classList.toggle('over', cost > 40);
+  buildPolicyAxis();
+}
+
+function buildPolicyAxis(){
+  const axis = document.getElementById('policyAxis');
+  axis.innerHTML = "";
+  grades.forEach(g=>{
+    const bandLow = parseFloat(g.band.match(/₹(\d+)/)[1]);
+    const top = pctFromValue(bandLow);
+    const line = document.createElement('div');
+    line.className = 'band';
+    line.style.top = top + '%';
+    line.innerHTML = `<span class="band-label">Grade ${g.letter} floor · ₹${bandLow}L</span>`;
+    axis.appendChild(line);
+  });
+  const cols = document.createElement('div');
+  cols.className = 'role-columns';
+  let prevCenter = null;
+  roles.forEach(role=>{
+    const col = document.createElement('div');
+    col.className = 'role-col';
+    const curTop = pctFromValue(role.current);
+    const curM = document.createElement('div');
+    curM.className = 'marker current';
+    curM.style.top = curTop + '%';
+    col.appendChild(curM);
+
+    const target = role.market * postureValue/100;
+    const targetTop = pctFromValue(target);
+    const targetM = document.createElement('div');
+    targetM.className = 'marker policy';
+    targetM.style.top = targetTop + '%';
+    col.appendChild(targetM);
+
+    const label = document.createElement('div');
+    label.className = 'col-label';
+    label.textContent = role.name.split(' ')[0];
+    col.appendChild(label);
+    cols.appendChild(col);
+  });
+  axis.appendChild(cols);
+}
+
+/* ---------- PHASE 5: PAY STRUCTURE ---------- */
+let spreadValue = 30;
+function onSpreadChange(){
+  spreadValue = parseFloat(document.getElementById('spreadSlider').value);
+  document.getElementById('spreadReadout').textContent = spreadValue + '%';
+  buildStructure();
+}
+
+function gradeMidpoints(){
+  const targetOf = id => { const r = roles.find(x=>x.id===id); return r.market * postureValue/100; };
+  return {
+    A: targetOf('vp'),
+    B: targetOf('em'),
+    C: targetOf('tl'),
+    D: (targetOf('se') + targetOf('da')) / 2,
+    E: targetOf('ae'),
+    F: 4.5
+  };
+}
+
+function buildStructure(){
+  const mids = gradeMidpoints();
+  const S = spreadValue/100;
+  const table = document.getElementById('gradeTable');
+  let rows = `<tr><th>Grade</th><th>Min (₹L)</th><th>Midpoint (₹L)</th><th>Max (₹L)</th></tr>`;
+  const bandsData = {};
+  ["A","B","C","D","E","F"].forEach(letter=>{
+    const mid = mids[letter];
+    const min = mid*2/(2+S);
+    const max = min*(1+S);
+    bandsData[letter] = {min, mid, max};
+    rows += `<tr><td class="rolename">${letter}</td><td>${min.toFixed(1)}</td><td><b>${mid.toFixed(1)}</b></td><td>${max.toFixed(1)}</td></tr>`;
+  });
+  table.innerHTML = rows;
+
+  // compression check
+  const order = ["A","B","C","D","E","F"];
+  let compressed = false;
+  for(let i=0;i<order.length-1;i++){
+    const above = bandsData[order[i]], below = bandsData[order[i+1]];
+    if(above.min < below.max){ compressed = true; }
+  }
+  document.getElementById('structureAlert').classList.toggle('show', compressed);
+
+  // render axis with band rectangles
+  const axis = document.getElementById('structureAxis');
+  axis.innerHTML = "";
+  order.forEach(letter=>{
+    const b = bandsData[letter];
+    const topPct = pctFromValue(b.max);
+    const botPct = pctFromValue(b.min);
+    const rect = document.createElement('div');
+    rect.className = 'band-rect';
+    rect.style.top = topPct + '%';
+    rect.style.height = (botPct - topPct) + '%';
+    rect.style.background = 'rgba(184,147,62,0.14)';
+    rect.style.borderTop = '1px solid ' + 'var(--gold)';
+    rect.style.borderBottom = '1px solid var(--line)';
+    rect.innerHTML = `<span class="rect-label" style="color:#5c4712;">Grade ${letter}</span>`;
+    axis.appendChild(rect);
+  });
+
+  const cols = document.createElement('div');
+  cols.className = 'role-columns';
+  let anyCapped = false;
+  roles.forEach(role=>{
+    const col = document.createElement('div');
+    col.className = 'role-col';
+    const band = bandsData[role.grade];
+    const capped = role.current > band.max;
+    if(capped) anyCapped = true;
+    const top = pctFromValue(role.current);
+    const m = document.createElement('div');
+    m.className = 'marker ' + (capped ? 'flagged' : 'current');
+    m.style.top = top + '%';
+    col.appendChild(m);
+    const label = document.createElement('div');
+    label.className = 'col-label';
+    label.textContent = role.name.split(' ')[0] + (capped ? ' ⚠' : '');
+    col.appendChild(label);
+    cols.appendChild(col);
+  });
+  axis.appendChild(cols);
+  document.getElementById('cappedAlert').classList.toggle('show', anyCapped);
+}
+
+/* ---------- PHASE 6: THE BREAK ---------- */
+function buildRoles(){
+  const wrap = document.getElementById('rolesWrap');
+  wrap.innerHTML = "";
+  roles.forEach(role=>{
+    const gap = +(role.market - role.current).toFixed(1);
+    const gapLabel = gap > 0 ? `Market +₹${gap}L above current` : `Current at/above market`;
+    const row = document.createElement('div');
+    row.className = 'role-row';
+    row.innerHTML = `
+      <div class="role-top"><div class="role-name">${role.name} <span style="color:var(--grey);font-weight:normal;font-size:12px;">— Grade ${role.grade}</span></div><div class="gap-flag">${gapLabel}</div></div>
+      <div class="role-meta" style="margin-bottom:10px;">Headcount: ${role.headcount}</div>
+      <div class="role-nums">
+        <div><span>Current</span><b>₹${role.current.toFixed(1)}L</b></div>
+        <div><span>Market Median</span><b>₹${role.market.toFixed(1)}L</b></div>
+        <div><span>Proposed</span><b id="prop-${role.id}">₹${role.current.toFixed(1)}L</b></div>
+        <div><span>Cost of this move</span><b id="cost-${role.id}">₹0.0L</b></div>
+      </div>
+      <input type="range" id="slider-${role.id}" min="${(role.current - 0.5).toFixed(1)}" max="${Math.max(role.market, role.current) + 1}" step="0.1" value="${role.current}" oninput="onSliderChange('${role.id}')">
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+function onSliderChange(id){
+  const role = roles.find(r=>r.id===id);
+  const val = parseFloat(document.getElementById('slider-'+id).value);
+  role.proposed = val;
+  document.getElementById('prop-'+id).textContent = `₹${val.toFixed(1)}L`;
+  const cost = (val - role.current) * role.headcount;
+  document.getElementById('cost-'+id).textContent = `₹${cost.toFixed(1)}L`;
+  updateBudget();
+  buildAxis();
+}
+
+function updateBudget(){
+  let spent = 0;
+  roles.forEach(r=>{
+    const proposed = (r.proposed !== undefined) ? r.proposed : r.current;
+    spent += (proposed - r.current) * r.headcount;
+  });
+  const remaining = BUDGET - spent;
+  const bar = document.getElementById('budgetBar');
+  document.getElementById('budgetAmt').textContent = `₹${remaining.toFixed(1)} L`;
+  bar.classList.toggle('over', remaining < 0);
+}
+
+function pctFromValue(v){
+  const clamped = Math.min(Math.max(v, AXIS_MIN), AXIS_MAX);
+  return 100 - ((clamped - AXIS_MIN) / (AXIS_MAX - AXIS_MIN) * 100);
+}
+
+function buildAxis(){
+  const axis = document.getElementById('axis');
+  axis.innerHTML = "";
+  grades.forEach(g=>{
+    const bandLow = parseFloat(g.band.match(/₹(\d+)/)[1]);
+    const top = pctFromValue(bandLow);
+    const line = document.createElement('div');
+    line.className = 'band';
+    line.style.top = top + '%';
+    line.innerHTML = `<span class="band-label">Grade ${g.letter} floor · ₹${bandLow}L</span>`;
+    axis.appendChild(line);
+  });
+  const cols = document.createElement('div');
+  cols.className = 'role-columns';
+  roles.forEach(role=>{
+    const col = document.createElement('div');
+    col.className = 'role-col';
+    const curTop = pctFromValue(role.current);
+    const curM = document.createElement('div');
+    curM.className = 'marker current';
+    curM.style.top = curTop + '%';
+    col.appendChild(curM);
+    const proposed = (role.proposed !== undefined) ? role.proposed : role.current;
+    const propTop = pctFromValue(proposed);
+    const propM = document.createElement('div');
+    propM.className = 'marker proposed';
+    propM.style.top = propTop + '%';
+    col.appendChild(propM);
+    const link = document.createElement('div');
+    link.className = 'link-line';
+    const top = Math.min(curTop, propTop);
+    const height = Math.abs(curTop - propTop);
+    link.style.top = top + '%';
+    link.style.height = height + '%';
+    col.appendChild(link);
+    const label = document.createElement('div');
+    label.className = 'col-label';
+    label.textContent = role.name.split(' ')[0];
+    col.appendChild(label);
+    cols.appendChild(col);
+  });
+  axis.appendChild(cols);
+  checkInversion();
+}
+
+function checkInversion(){
+  const gradeOrder = {"A":6,"B":5,"C":4,"D":3,"E":2,"F":1};
+  let inverted = false;
+  roles.forEach(r1=>{
+    const p1 = (r1.proposed !== undefined) ? r1.proposed : r1.current;
+    roles.forEach(r2=>{
+      if(r1.id === r2.id) return;
+      if(gradeOrder[r1.grade] < gradeOrder[r2.grade] && p1 >= r2.current){ inverted = true; }
+    });
+  });
+  document.getElementById('inversionAlert').classList.toggle('show', inverted);
+}
+
+async function submitAll(){
+  const payload = {
+    team: teamName,
+    needs: document.getElementById('needsList').value,
+    postureValue, postureRationale: document.getElementById('postureRationale').value,
+    spreadValue, structureRationale: document.getElementById('structureRationale').value,
+    recommendation: document.getElementById('recommendation').value,
+    aiCritique: document.getElementById('aiCritique').value,
+    allocation: roles.map(r=>({name:r.name, current:r.current, proposed:(r.proposed!==undefined?r.proposed:r.current)})),
+    submittedAt: new Date().toISOString()
+  };
+  const msg = document.getElementById('submitMsg');
+  try{
+    if(window.storage){
+      await window.storage.set('submission:' + teamName.replace(/\s+/g,'_'), JSON.stringify(payload), true);
+      msg.textContent = "Submitted. Your facilitator can review all team submissions together.";
+    } else {
+      msg.textContent = "Deliverable complete. Please share your screen or export notes for your facilitator.";
+    }
+  }catch(e){
+    msg.textContent = "Could not save automatically — please note your responses down for your facilitator.";
+  }
+}
+</script>
+</body>
+</html>
