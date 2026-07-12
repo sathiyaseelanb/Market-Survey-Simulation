@@ -178,10 +178,10 @@
     <div class="screen" data-idx="1">
       <div class="eyebrow">Phase 2 · What You Already Built</div>
       <h1 class="title">The Internal Grade Ladder</h1>
-      <p class="subtitle">This is HealthBridge's job evaluation output from Sessions 1–6 — your own work. Six grades, ranked by internal value. No market data has touched this yet.</p>
+      <p class="subtitle">This is HealthBridge's job evaluation output. Six grades, ranked by internal value. This is not yet compared with market data.</p>
       <div class="ladder" id="ladderStatic"></div>
       <div class="card" style="margin-top:22px;">
-        <p style="margin:0;font-size:14px;color:var(--grey);">Hold this image in mind. Everything from here on lays market data directly on top of it.</p>
+        <p style="margin:0;font-size:14px;color:var(--grey);">Make not of this for the next stage of the simulation. You will compare this with market data.</p>
       </div>
       <div class="nav-row"><button class="ghost" onclick="goTo(0)">← Back</button><button class="primary" onclick="goTo(2)">Proceed to Define the Market →</button></div>
     </div>
@@ -190,7 +190,7 @@
     <div class="screen" data-idx="2">
       <div class="eyebrow">Phase 3 · Before Any Survey Exists</div>
       <h1 class="title">Define Your Market — Same Job, Different Boundary</h1>
-      <p class="subtitle">One role: Software Engineer. Before you look at a single survey, decide what counts as "the market." Watch the number move as you change nothing about the job itself.</p>
+      <p class="subtitle">One role: Software Engineer. In this scree, define counts as "the market" for HealthBridge.</p>
 
       <div class="dial-grid">
         <div class="dial">
@@ -205,7 +205,7 @@
           <label class="field-label">Geographic scope</label>
           <select id="dialGeo" onchange="recomputeMarketDefinition()">
             <option value="1.00" selected>Bengaluru only</option>
-            <option value="0.92">Tier-1 India (Bengaluru, Hyderabad, Pune, NCR)</option>
+            <option value="0.92">Tier-1 India (Bengaluru, Chennai, Hyderabad, Kolkata, Mumbai, Pune, Delhi & NCR)</option>
             <option value="0.85">Pan-India</option>
           </select>
         </div>
